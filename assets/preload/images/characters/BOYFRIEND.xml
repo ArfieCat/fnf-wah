@@ -409,7 +409,7 @@
 	<SubTexture name="BF dies0055" x="4490" y="1893" width="439" height="435" frameX="0" frameY="-6" frameWidth="439" frameHeight="445"/>
 	<SubTexture name="BF dies0056" x="4490" y="1893" width="439" height="435" frameX="0" frameY="-6" frameWidth="439" frameHeight="445"/>
 	<SubTexture name="BF dies0057" x="4490" y="1893" width="439" height="435" frameX="0" frameY="-6" frameWidth="439" frameHeight="445"/>
-	<SubTexture name="BF hit0000" x="4939" y="1893" width="429" height="425" frameX="0" frameY="-16" frameWidth="451" frameHeight="441"/>
+	<!-- <SubTexture name="BF hit0000" x="4939" y="1893" width="429" height="425" frameX="0" frameY="-16" frameWidth="451" frameHeight="441"/> -->
 	<SubTexture name="BF hit0001" x="5378" y="1893" width="418" height="441" frameX="-4" frameY="0" frameWidth="451" frameHeight="441"/>
 	<SubTexture name="BF hit0002" x="5806" y="1893" width="392" height="393" frameX="-59" frameY="-38" frameWidth="451" frameHeight="441"/>
 	<SubTexture name="BF hit0003" x="6208" y="1893" width="392" height="393" frameX="-59" frameY="-38" frameWidth="451" frameHeight="441"/>

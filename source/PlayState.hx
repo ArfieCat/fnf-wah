@@ -1,5 +1,6 @@
 package;
 
+import cpp.StdString;
 #if desktop
 import Discord.DiscordClient;
 #end
@@ -118,7 +119,7 @@ class PlayState extends MusicBeatState
 	public var opponentStrums:FlxTypedGroup<StrumNote>;
 	public var playerStrums:FlxTypedGroup<StrumNote>;
 	private var grpNoteSplashes:FlxTypedGroup<NoteSplash>;
-	var strumLocks:Array<Bool> = [false, false, false, false];
+	private var screenCrack:FlxSprite;
 
 	private var camZooming:Bool = false;
 	private var curSong:String = "";
@@ -217,6 +218,7 @@ class PlayState extends MusicBeatState
 
 	//Achievement shit
 	var keysPressed:Array<Bool> = [false, false, false, false];
+	var strumLocks:Array<Bool> = [false, false, false, false];
 	var boyfriendIdleTime:Float = 0.0;
 	var boyfriendIdled:Bool = false;
 
@@ -822,6 +824,15 @@ class PlayState extends MusicBeatState
 			botplayTxt.y = timeBarBG.y - 78;
 		}
 
+		screenCrack = new FlxSprite(0, 0).loadGraphic(Paths.image('screenCrack'), true, 640, 576);
+		screenCrack.animation.add('swing', [0, 1, 2], 12, false);
+		screenCrack.animation.add('crack', [3, 4, 5, 6], 12, false);
+		screenCrack.scrollFactor.set();
+		screenCrack.alpha = 0;
+		screenCrack.scale.set(3, 3);
+		add(screenCrack);
+		screenCrack.screenCenter();
+
 		strumLineNotes.cameras = [camHUD];
 		grpNoteSplashes.cameras = [camHUD];
 		notes.cameras = [camHUD];
@@ -835,6 +846,7 @@ class PlayState extends MusicBeatState
 		timeBarBG.cameras = [camHUD];
 		timeTxt.cameras = [camHUD];
 		doof.cameras = [camHUD];
+		screenCrack.cameras = [camHUD];
 
 		// if (SONG.song == 'South')
 		// FlxG.camera.alpha = 0.7;
@@ -2324,8 +2336,22 @@ class PlayState extends MusicBeatState
 	public function triggerEventNote(eventName:String, value1:String, value2:String, ?onLua:Bool = false) {
 		switch(eventName) {
 			case 'Break Screen':
-				// todo
-		
+				var swingDuration = (60 / SONG.bpm) / Std.parseFloat(value1);
+				var crackDuration = (60 / SONG.bpm) * Std.parseInt(value2);
+				if (Math.isNaN(swingDuration) || swingDuration <= 0) swingDuration = (60 / SONG.bpm);
+				
+				screenCrack.animation.getByName('swing').frameRate = screenCrack.animation.getByName('swing').frames.length / swingDuration;
+				screenCrack.alpha = 1;
+				screenCrack.animation.play('swing');
+
+				new FlxTimer().start(swingDuration, function(tmr:FlxTimer) {
+					screenCrack.animation.play('crack');
+				});
+
+				new FlxTimer().start(swingDuration + (crackDuration * 0.75), function(tmr:FlxTimer) {
+					FlxTween.tween(screenCrack, {alpha: 0}, crackDuration * 0.25);
+				});
+
 			case 'Hey!':
 				var value:Int = Std.parseInt(value1);
 				var time:Float = Std.parseFloat(value2);
@@ -3065,13 +3091,15 @@ class PlayState extends MusicBeatState
 						{
 							if (!note.isSustainNote) spawnNoteSplashOnNote(note);
 
-							// hide and mark strum as locked for the next 5 seconds
+							// hide and mark strum as locked
 							strumLocks[note.noteData] = true;
-							playerStrums.members[note.noteData].visible = false;
+							playerStrums.members[note.noteData].alpha = 0.3;
 
-							new FlxTimer().start(5, function(tmr:FlxTimer) {
+							var duration = (60 / SONG.bpm) * 8;
+
+							new FlxTimer().start(duration, function(tmr:FlxTimer) {
 								strumLocks[note.noteData] = false;
-								playerStrums.members[note.noteData].visible = true;
+								playerStrums.members[note.noteData].alpha = 1;
 							});
 	
 							if(boyfriend.animation.getByName('hurt') != null) {
